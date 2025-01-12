@@ -1,6 +1,6 @@
 import TaskItem from './TaskItem';
 
-const TaskList = ({ title, titleColor, tasks, onDelete, onEdit, onToggleComplete }) => {
+const TaskList = ({ title, titleColor, tasks, onDelete, onEdit, onToggleComplete, isDarkMode }) => {
   return (
     <div className='border border-gray-500 h-full'>
       <h2 className={`text-lg font-semibold ${titleColor} mb-4 flex justify-center`}>{title}</h2>
@@ -12,6 +12,7 @@ const TaskList = ({ title, titleColor, tasks, onDelete, onEdit, onToggleComplete
             onDelete={onDelete}
             onEdit={onEdit}
             onToggleComplete={onToggleComplete}
+            isDarkMode={isDarkMode}
           />
         ))}
       </div>

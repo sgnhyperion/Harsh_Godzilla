@@ -1,8 +1,12 @@
 import { Edit2, Trash2 } from 'lucide-react';
 
-const TaskItem = ({ task, onDelete, onEdit, onToggleComplete }) => {
+const TaskItem = ({ task, onDelete, onEdit, onToggleComplete, isDarkMode }) => {
   return (
-    <div className="flex items-center gap-3 p-3 bg-gray-800 bg-opacity-40 rounded group">
+    <div className={`flex items-center gap-3 p-3 bg-gray-800 bg-opacity-40 rounded group 
+      ${
+        isDarkMode ? 'bg-gray-800 bg-opacity-40' : 'bg-gray-100'
+      }`}
+    >
       <input
         type="radio"
         checked={task.completed}

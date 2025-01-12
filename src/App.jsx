@@ -1,51 +1,18 @@
+// App.jsx
 import { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import AddTaskModal from './components/AddTaskModal';
 import PreferenceModal from './components/PreferenceModal';
-import { Edit2, Trash2 } from 'lucide-react';
-
-const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-[400px] text-black">
-        <div className="flex justify-center mb-4">
-          <div className="w-12 h-12 rounded-full border-2 border-yellow-500 flex items-center justify-center">
-            <span className="text-2xl">!</span>
-          </div>
-        </div>
-        <h3 className="text-xl font-semibold text-center mb-4">
-          Are you sure you want to delete this task?
-        </h3>
-        <div className="flex items-center gap-2 mb-4">
-          <input type="checkbox" id="noShow" className="rounded" />
-          <label htmlFor="noShow" className="text-sm text-gray-600">Do not show again</label>
-        </div>
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Yes, I'm sure
-          </button>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-          >
-            No, cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import DeleteConfirmationModal from './components/DeleteConfirmationModal';
 
 const App = () => {
+  // Theme state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme ? JSON.parse(savedTheme) : true;
+  });
 
-  
-
-
+  // Task management states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isPrefModalOpen, setIsPrefModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -53,7 +20,7 @@ const App = () => {
   const [currentTask, setCurrentTask] = useState('');
   const [editingTask, setEditingTask] = useState(null);
   const [tasks, setTasks] = useState(() => {
-  const savedTasks = localStorage.getItem('tasks');
+    const savedTasks = localStorage.getItem('tasks');
     if (savedTasks) {
       try {
         return JSON.parse(savedTasks);
@@ -75,13 +42,12 @@ const App = () => {
     };
   });
 
+  // Theme persistence
   useEffect(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
-    }
-  }, []);
+    localStorage.setItem('theme', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
 
+  // Tasks persistence
   useEffect(() => {
     try {
       localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -89,6 +55,10 @@ const App = () => {
       console.error('Error saving tasks to localStorage:', error);
     }
   }, [tasks]);
+
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
+  };
 
   const handleAddTask = (task) => {
     setCurrentTask(task);
@@ -152,59 +122,88 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white flex flex-col">
-      <header className="p-4 border-b border-gray-800">
-        <div className="flex items-center gap-2">
-          <div className="grid grid-cols-2 gap-1">
-            <div className="w-2 h-2 bg-green-500"></div>
-            <div className="w-2 h-2 bg-blue-500"></div>
-            <div className="w-2 h-2 bg-yellow-500"></div>
-            <div className="w-2 h-2 bg-red-500"></div>
+    <div className={`min-h-screen flex flex-col ${isDarkMode ? 'bg-[#121212] text-white' : 'bg-white text-gray-900'}`}>
+      <header className={`p-4 flex items-center justify-between ${isDarkMode ? 'border-gray-800' : 'border-gray-200'} border-b`}>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="grid grid-cols-2 gap-1">
+              <div className="w-2 h-2 bg-green-500"></div>
+              <div className="w-2 h-2 bg-blue-500"></div>
+              <div className="w-2 h-2 bg-yellow-500"></div>
+              <div className="w-2 h-2 bg-red-500"></div>
+            </div>
+            <h1 className="text-xl font-bold">supertasks.io</h1>
+            <span className="px-2 py-1 text-xs bg-gray-700 rounded">BETA</span>
+            <span className="text-[#00BDB4] px-2">Quick decision making tool</span>
           </div>
-          <h1 className="text-xl font-bold">supertasks.io</h1>
-          <span className="px-2 py-1 text-xs bg-gray-700 rounded">BETA</span>
+        </div>
+        
+        <div className="flex justify-center gap-10">
+          <button 
+            onClick={toggleTheme}
+            className={`${isDarkMode ? 'text-white' : 'text-gray-900'} hover:text-gray-500`}
+          >
+            {isDarkMode ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
+          </button>
+          <button className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold`}>Workspaces</button>
+          <button className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold`}>About</button>
+          <button className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold`}>Pricing</button>
+          <button className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold`}>Feedback</button>
+          <button className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold`}>Login</button>
         </div>
       </header>
 
       <main className="flex-1 grid grid-cols-2 relative">
-        <div className="border-r border-b border-gray-800 p-4 overflow-auto">
+        <div className={`border-r border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'} p-4 overflow-auto`}>
           <TaskList 
             title="DO FIRST"
-            titleColor="text-green-400"
+            titleColor={isDarkMode ? "text-green-400" : "text-green-600"}
             tasks={tasks.doFirst}
             onDelete={(id) => handleDeleteClick('doFirst', id)}
             onEdit={(task) => handleEditTask('doFirst', task)}
             onToggleComplete={(id) => handleToggleComplete('doFirst', id)}
+            isDarkMode={isDarkMode}
           />
         </div>
-        <div className="border-b border-gray-800 p-4 overflow-auto">
+        <div className={`border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'} p-4 overflow-auto`}>
           <TaskList 
             title="DO LATER"
-            titleColor="text-blue-400"
+            titleColor={isDarkMode ? "text-blue-400" : "text-blue-600"}
             tasks={tasks.doLater}
             onDelete={(id) => handleDeleteClick('doLater', id)}
             onEdit={(task) => handleEditTask('doLater', task)}
             onToggleComplete={(id) => handleToggleComplete('doLater', id)}
+            isDarkMode={isDarkMode}
           />
         </div>
-        <div className="border-r border-gray-800 p-4 overflow-auto">
+        <div className={`border-r ${isDarkMode ? 'border-gray-800' : 'border-gray-200'} p-4 overflow-auto`}>
           <TaskList 
             title="DELEGATE"
-            titleColor="text-yellow-500"
+            titleColor={isDarkMode ? "text-yellow-500" : "text-yellow-600"}
             tasks={tasks.delegate}
             onDelete={(id) => handleDeleteClick('delegate', id)}
             onEdit={(task) => handleEditTask('delegate', task)}
             onToggleComplete={(id) => handleToggleComplete('delegate', id)}
+            isDarkMode={isDarkMode}
           />
         </div>
         <div className="p-4 overflow-auto">
           <TaskList 
             title="ELIMINATE"
-            titleColor="text-red-500"
+            titleColor={isDarkMode ? "text-red-500" : "text-red-600"}
             tasks={tasks.eliminate}
             onDelete={(id) => handleDeleteClick('eliminate', id)}
             onEdit={(task) => handleEditTask('eliminate', task)}
             onToggleComplete={(id) => handleToggleComplete('eliminate', id)}
+            isDarkMode={isDarkMode}
           />
         </div>
 
@@ -225,6 +224,7 @@ const App = () => {
         }}
         onSubmit={handleAddTask}
         initialValue={currentTask}
+        isDarkMode={isDarkMode}
       />
 
       <PreferenceModal
@@ -234,6 +234,7 @@ const App = () => {
           setCurrentTask('');
         }}
         onSelect={handleSetPreference}
+        isDarkMode={isDarkMode}
       />
 
       <DeleteConfirmationModal 
@@ -243,6 +244,7 @@ const App = () => {
           setDeleteTask(null);
         }}
         onConfirm={handleConfirmDelete}
+        isDarkMode={isDarkMode}
       />
     </div>
   );
