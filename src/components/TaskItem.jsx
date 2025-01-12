@@ -7,21 +7,21 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleComplete }) => {
         type="radio"
         checked={task.completed}
         onChange={() => onToggleComplete(task.id)}
-        className="w-4 h-4 border-2 border-gray-400 rounded-full"
+        className="w-4 h-4 border-2 border-gray-400 rounded-full cursor-pointer"
       />
       <span className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
         {task.text}
       </span>
-      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-2">
         <button
           onClick={() => onEdit(task)}
-          className="p-1 hover:text-green-400"
+          className="p-1 text-green-400"
         >
           <Edit2 size={16} />
         </button>
         <button
           onClick={() => onDelete(task.id)}
-          className="p-1 hover:text-red-400"
+          className="p-1 text-red-400"
         >
           <Trash2 size={16} />
         </button>
